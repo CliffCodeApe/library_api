@@ -4,6 +4,7 @@ import (
 	"io"
 	"library_api/contract"
 	"library_api/dto"
+	"library_api/middleware"
 	"library_api/pkg/errs"
 	"net/http"
 	"os"
@@ -27,9 +28,9 @@ func (b *bookController) initService(service *contract.Service) {
 func (b *bookController) initRoute(app *gin.RouterGroup) {
 	app.GET("/", b.GetAllBooks)
 	app.GET("/:id", b.GetBookByID)
-	app.POST("/insertBook", b.InsertBook)
-	app.GET("../assets/pdf/:filename", b.ServePDF)
-	app.GET("../assets/thumbnails/:filename", b.ServeThumbnail)
+	app.POST("/insertBook", middleware.AdminCheck, b.InsertBook)
+	app.GET("/assets/pdf/:filename", b.ServePDF)
+	app.GET("/assets/thumbnails/:filename", b.ServeThumbnail)
 }
 
 func (b *bookController) ServePDF(ctx *gin.Context) {
@@ -57,7 +58,19 @@ func (b *bookController) ServeThumbnail(ctx *gin.Context) {
 }
 
 func (b *bookController) GetAllBooks(ctx *gin.Context) {
-	result, err := b.service.GetAllBooks()
+	genre := ctx.Query("genre")
+	search := ctx.Query("search")
+	var result *dto.BookListResponse
+	var err error
+
+	if genre != "" {
+		result, err = b.service.GetBooksByGenre(genre)
+	} else if search != "" {
+		result, err = b.service.SearchBooks(search)
+	} else {
+		result, err = b.service.GetAllBooks()
+	}
+
 	if err != nil {
 		handlerError(ctx, err)
 		return

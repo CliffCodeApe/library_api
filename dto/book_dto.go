@@ -5,6 +5,7 @@ type BookRequest struct {
 	Author      string `form:"author" validate:"required"`
 	Year        int    `form:"year" validate:"required"`
 	Genre       string `form:"genre" validate:"required"`
+	Stock       int    `form:"stock" validate:"required"`
 	Description string `form:"description" validate:"required"`
 	Publisher   string `form:"publisher" validate:"required"`
 	ISBN        string `form:"isbn" validate:"required"`

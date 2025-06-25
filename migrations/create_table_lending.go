@@ -20,8 +20,8 @@ func (m *createLendingTable) Up(conn *sql.Tx) error {
 	_, err := conn.Exec(`
 		CREATE TABLE lendings (
 			id SERIAL PRIMARY KEY,
-			book_id INT NOT NULL,
-			user_id INT NOT NULL,
+			book_id BIGINT NOT NULL,
+			user_id BIGINT NOT NULL,
 			status VARCHAR(50) NOT NULL,
 			created_at TIMESTAMP NOT NULL DEFAULT NOW(),
 			updated_at TIMESTAMP NOT NULL DEFAULT NOW()

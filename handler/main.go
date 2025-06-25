@@ -26,6 +26,7 @@ func New(app *gin.Engine, service *contract.Service) {
 	allController := []controller{
 		&authController{},
 		&bookController{},
+		&lendingController{},
 	}
 
 	// do not modify the code below there

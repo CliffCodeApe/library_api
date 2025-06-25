@@ -6,8 +6,9 @@ import (
 )
 
 type Repository struct {
-	User UserRepository
-	Book BookRepository
+	User    UserRepository
+	Book    BookRepository
+	Lending LendingRepository
 }
 type UserRepository interface {
 	InsertUser(ctx context.Context, user *entity.User) error
@@ -23,4 +24,17 @@ type BookRepository interface {
 	GetAllBooks() ([]entity.Book, error)
 	GetBookByID(id uint64) (*entity.Book, error)
 	InsertBook(book *entity.Book) error
+	ChangeStock(id uint64, delta int) error
+	GetBooksByGenre(genre string) ([]entity.Book, error)
+	SearchBooks(keyword string) ([]entity.Book, error)
+	GetBookByURL(url string) (*entity.Book, error)
+}
+
+type LendingRepository interface {
+	GetAllLendings() ([]entity.Lending, error)
+	GetLendingByID(id uint64) (*entity.Lending, error)
+	MakeLending(lending *entity.Lending) error
+	ChangeLendingStatus(id uint64, lending *entity.Lending) error
+	GetLendingsByStatus(status string) ([]entity.Lending, error)
+	SearchLendings(keyword string) ([]entity.Lending, error)
 }

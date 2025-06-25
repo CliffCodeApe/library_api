@@ -27,8 +27,8 @@ func implBookService(repo *contract.Repository) contract.BookService {
 	}
 }
 
-func (s *BookService) GetAllBooks() (*dto.BookListResponse, error) {
-	books, err := s.bookRepository.GetAllBooks()
+func (b *BookService) GetAllBooks() (*dto.BookListResponse, error) {
+	books, err := b.bookRepository.GetAllBooks()
 	if err != nil {
 		return nil, err
 	}
@@ -51,8 +51,8 @@ func (s *BookService) GetAllBooks() (*dto.BookListResponse, error) {
 	return responses, nil
 }
 
-func (s *BookService) GetBookByID(id uint64) (*dto.BookDetailResponse, error) {
-	book, err := s.bookRepository.GetBookByID(id)
+func (b *BookService) GetBookByID(id uint64) (*dto.BookDetailResponse, error) {
+	book, err := b.bookRepository.GetBookByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -66,6 +66,7 @@ func (s *BookService) GetBookByID(id uint64) (*dto.BookDetailResponse, error) {
 			Author:      book.Author,
 			Year:        book.Year,
 			Genre:       book.Genre,
+			Stock:       book.Stock,
 			Description: book.Description,
 			Publisher:   book.Publisher,
 			ISBN:        book.ISBN,
@@ -77,7 +78,31 @@ func (s *BookService) GetBookByID(id uint64) (*dto.BookDetailResponse, error) {
 	}, nil
 }
 
-func (s *BookService) InsertBook(payload *dto.BookRequest, pdfFileBytes []byte) (*dto.BookDetailResponse, error) {
+func (b *BookService) GetBooksByGenre(genre string) (*dto.BookListResponse, error) {
+	books, err := b.bookRepository.GetBooksByGenre(genre)
+	if err != nil {
+		return nil, err
+	}
+
+	data := []dto.BookListData{}
+	for _, book := range books {
+		data = append(data, dto.BookListData{
+			ID:     book.ID,
+			Title:  book.Title,
+			Author: book.Author,
+			Genre:  book.Genre,
+		})
+	}
+
+	responses := &dto.BookListResponse{
+		StatusCode: http.StatusOK,
+		Message:    "List Buku berhasil diambil",
+		Data:       data,
+	}
+	return responses, nil
+}
+
+func (b *BookService) InsertBook(payload *dto.BookRequest, pdfFileBytes []byte) (*dto.BookDetailResponse, error) {
 	validPayload := helpers.ValidateStruct(payload)
 	if validPayload != nil {
 		return nil, validPayload
@@ -104,7 +129,7 @@ func (s *BookService) InsertBook(payload *dto.BookRequest, pdfFileBytes []byte) 
 	if err := os.MkdirAll(thumbnailDir, os.ModePerm); err != nil {
 		return nil, fmt.Errorf("failed to create thumbnail directory: %w", err)
 	}
-	thumbnailPath := filepath.Join(thumbnailDir, thumbFileName+".jpg")
+	thumbnailPath := filepath.Join(thumbnailDir, thumbFileName)
 
 	doc, err := fitz.New(pdfPath)
 	if err != nil {
@@ -131,6 +156,7 @@ func (s *BookService) InsertBook(payload *dto.BookRequest, pdfFileBytes []byte) 
 		Author:      payload.Author,
 		Year:        payload.Year,
 		Genre:       payload.Genre,
+		Stock:       payload.Stock,
 		Description: payload.Description,
 		Publisher:   payload.Publisher,
 		ISBN:        payload.ISBN,
@@ -139,7 +165,7 @@ func (s *BookService) InsertBook(payload *dto.BookRequest, pdfFileBytes []byte) 
 		Thumbnail:   thumbURL,
 		FilePath:    pdfURL,
 	}
-	err = s.bookRepository.InsertBook(book)
+	err = b.bookRepository.InsertBook(book)
 	if err != nil {
 		return nil, err
 	}
@@ -154,6 +180,7 @@ func (s *BookService) InsertBook(payload *dto.BookRequest, pdfFileBytes []byte) 
 			Author:      book.Author,
 			Year:        book.Year,
 			Genre:       book.Genre,
+			Stock:       book.Stock,
 			Description: book.Description,
 			Publisher:   book.Publisher,
 			ISBN:        book.ISBN,
@@ -164,4 +191,28 @@ func (s *BookService) InsertBook(payload *dto.BookRequest, pdfFileBytes []byte) 
 		},
 	}
 	return response, nil
+}
+
+func (b *BookService) SearchBooks(keyword string) (*dto.BookListResponse, error) {
+	books, err := b.bookRepository.SearchBooks(keyword)
+	if err != nil {
+		return nil, err
+	}
+
+	data := []dto.BookListData{}
+	for _, book := range books {
+		data = append(data, dto.BookListData{
+			ID:     book.ID,
+			Title:  book.Title,
+			Author: book.Author,
+			Genre:  book.Genre,
+		})
+	}
+
+	responses := &dto.BookListResponse{
+		StatusCode: http.StatusOK,
+		Message:    "List Buku berhasil diambil",
+		Data:       data,
+	}
+	return responses, nil
 }

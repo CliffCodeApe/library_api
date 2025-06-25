@@ -8,7 +8,7 @@ type Book struct {
 	Author      string    `gorm:"column:author;type:varchar(255);not null"`
 	Year        int       `gorm:"column:year;type:int;not null"`
 	Genre       string    `gorm:"column:genre;type:varchar(100);not null"`
-	Stock       int       `gorm:"column:stock;type:int;not null;default:0"`
+	Stock       int       `gorm:"column:stock;type:int;not null"`
 	Description string    `gorm:"column:description;type:text;not null"`
 	Publisher   string    `gorm:"column:publisher;type:varchar(255);not null"`
 	ISBN        string    `gorm:"column:isbn;type:varchar(100);not null"`
