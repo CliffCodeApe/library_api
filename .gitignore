@@ -1,1 +1,10 @@
 .env
+private.pem
+public.pem
+
+assets/pdf
+assets/thumbnails
+assets/thumbnails/*.jpg
+
+.air.toml
+tmp/

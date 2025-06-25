@@ -11,9 +11,13 @@ import (
 )
 
 type AppConfiguration struct {
-	Port         int
-	IsProduction bool
-	DbURI        string
+	Port                 int
+	IsProduction         bool
+	DbURI                string
+	AccessTokenLifeTime  uint
+	RefreshTokenLifeTime uint
+	BaseURL              string
+	StoragePath          string
 }
 
 var config *AppConfiguration
@@ -39,11 +43,31 @@ func Load() {
 
 	isProduction := utils.SafeCompareString(os.Getenv("IS_PRODUCTION"), "true")
 
+	ATLifeTime, err := strconv.Atoi(os.Getenv("JWT_LIFETIME"))
+
+	if err != nil {
+		ATLifeTime = 7200
+	}
+
+	RFLifeTime, err := strconv.Atoi(os.Getenv("REFRESH_JWT_LIFETIME"))
+
+	if err != nil {
+		RFLifeTime = 172800
+	}
+
+	baseURL := os.Getenv("BASE_URL")
+
+	storagePath := os.Getenv("STORAGE_PATH")
+
 	// set global variable config
 	config = &AppConfiguration{
-		Port:         port,
-		IsProduction: isProduction,
-		DbURI:        loadDatabaseConfig(),
+		Port:                 port,
+		IsProduction:         isProduction,
+		DbURI:                loadDatabaseConfig(),
+		AccessTokenLifeTime:  uint(ATLifeTime),
+		RefreshTokenLifeTime: uint(RFLifeTime),
+		BaseURL:              baseURL,
+		StoragePath:          storagePath,
 	}
 }
 

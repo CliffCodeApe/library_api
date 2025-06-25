@@ -9,8 +9,6 @@ import (
 func New(db *gorm.DB) *contract.Repository {
 	return &contract.Repository{
 		User: implUserRepository(db),
-		// Code here
-		// Example:
-		// Example: implExampleRepository(db),
+		Book: implBookRepository(db),
 	}
 }
