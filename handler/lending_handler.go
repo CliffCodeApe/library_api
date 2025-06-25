@@ -93,14 +93,12 @@ func (l *lendingController) returnBook(ctx *gin.Context) {
 	}
 	userData := user.(*token.UserAuthToken)
 
-	// Get the uploaded file
 	file, err := ctx.FormFile("file")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "File is required"})
 		return
 	}
 
-	// Open the file for reading
 	fileReader, err := file.Open()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to open uploaded file"})
@@ -108,14 +106,12 @@ func (l *lendingController) returnBook(ctx *gin.Context) {
 	}
 	defer fileReader.Close()
 
-	// Read the file bytes (optional: save to disk or process as needed)
 	fileBytes, err := io.ReadAll(fileReader)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read uploaded file"})
 		return
 	}
 
-	// Pass fileBytes to your service layer
 	result, err := l.service.ReturnBook(lendingID, userData.ID, fileBytes)
 	if err != nil {
 		handlerError(ctx, err)

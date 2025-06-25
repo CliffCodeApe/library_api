@@ -83,13 +83,11 @@ func (l *LendingService) ReturnBook(lendingID, userID uint64, fileBytes []byte) 
 		return nil, err
 	}
 
-	// 2. Update the status
 	lending.Status = "returned"
 	if err := l.lendingRepository.ChangeLendingStatus(lendingID, lending); err != nil {
 		return nil, err
 	}
 
-	// 3. Use the correct BookID for stock update
 	if err := l.bookRepository.ChangeStock(lending.BookID, 1); err != nil {
 		return nil, err
 	}

@@ -116,7 +116,7 @@ func (b *BookService) InsertBook(payload *dto.BookRequest, pdfFileBytes []byte) 
 
 	pdfDir := "assets/pdf"
 	thumbnailDir := "assets/thumbnails"
-	// 1. Save PDF file
+
 	if err := os.MkdirAll(pdfDir, os.ModePerm); err != nil {
 		return nil, fmt.Errorf("failed to create pdf directory: %w", err)
 	}
@@ -125,7 +125,6 @@ func (b *BookService) InsertBook(payload *dto.BookRequest, pdfFileBytes []byte) 
 		return nil, fmt.Errorf("failed to save pdf: %w", err)
 	}
 
-	// 2. Generate thumbnail from PDF cover (first page)
 	if err := os.MkdirAll(thumbnailDir, os.ModePerm); err != nil {
 		return nil, fmt.Errorf("failed to create thumbnail directory: %w", err)
 	}
@@ -142,7 +141,6 @@ func (b *BookService) InsertBook(payload *dto.BookRequest, pdfFileBytes []byte) 
 		return nil, fmt.Errorf("failed to render pdf cover: %w", err)
 	}
 
-	// Optionally resize thumbnail
 	thumbImg := imaging.Resize(img, 300, 0, imaging.Lanczos)
 	if err := imaging.Save(thumbImg, thumbnailPath); err != nil {
 		return nil, fmt.Errorf("failed to save thumbnail: %w", err)
@@ -170,7 +168,6 @@ func (b *BookService) InsertBook(payload *dto.BookRequest, pdfFileBytes []byte) 
 		return nil, err
 	}
 
-	// 4. Prepare response
 	response := &dto.BookDetailResponse{
 		StatusCode: http.StatusCreated,
 		Message:    "Buku berhasil diupload",

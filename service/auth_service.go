@@ -97,8 +97,6 @@ func isValidEmail(email string) bool {
 
 func (a *AuthService) Login(ctx context.Context, payload *dto.LoginRequest) (*dto.LoginResponse, error) {
 	var response *dto.LoginResponse
-	// var loginErr error
-
 	validPayload := helpers.ValidateStruct(payload)
 	if validPayload != nil {
 		return nil, fmt.Errorf("helpers.ValidateStruct fail: %w", validPayload)
